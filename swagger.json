@@ -1,0 +1,74 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Subscription Form with Custom CAPTCHA",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Display index page",
+        "description": "Returns the index page with conditional CAPTCHA based on page loads",
+        "responses": {
+          "200": {
+            "description": "Index page with or without CAPTCHA"
+          }
+        }
+      }
+    },
+    "subscribe": {
+      "get": {
+        "summary": "Display subscription form",
+        "description": "Returns the subscription form page with conditional CAPTCHA based on page loads",
+        "responses": {
+          "200": {
+            "description": "Subscription form page with or without CAPTCHA"
+          }
+        }
+      }
+    },
+    "get-captcha": {
+      "get": {
+        "summary": "Get CAPTCHA image",
+        "description": "Generates and returns a new CAPTCHA image",
+        "responses": {
+          "200": {
+            "description": "CAPTCHA image in base64 format",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "image": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "verify-subscription": {
+      "post": {
+        "summary": "Verify subscription and CAPTCHA",
+        "description": "Verifies the CAPTCHA response (if required) and processes the subscription",
+        "parameters": [
+          {
+            "name": "captcha",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": "CAPTCHA response (required only after multiple page loads)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription successful"
+          },
+          "400": {
+            "description": "CAPTCHA verification failed"
+          }
+        }
+      }
+    }
+  }
+}
