@@ -9,9 +9,16 @@ from collections import defaultdict
 app = Flask(__name__)
 page_loads = defaultdict(list)
 
+def get_client_ip():
+    if request.headers.get('X-Forwarded-For'):
+        return request.headers.get('X-Forwarded-For').split(',')[0]
+    elif request.headers.get('X-Real-IP'):
+        return request.headers.get('X-Real-IP')
+    return request.remote_addr
+
 @app.route('/')
 def home():
-    client_ip = request.remote_addr
+    client_ip = get_client_ip()
     current_time = datetime.now()
     page_loads[client_ip] = [t for t in page_loads[client_ip] if current_time - t < timedelta(minutes=5)]
     page_loads[client_ip].append(current_time)
@@ -20,7 +27,7 @@ def home():
 
 @app.route('/subscribe')
 def index():
-    client_ip = request.remote_addr
+    client_ip = get_client_ip()
     current_time = datetime.now()
     page_loads[client_ip] = [t for t in page_loads[client_ip] if current_time - t < timedelta(minutes=5)]
     page_loads[client_ip].append(current_time)
@@ -45,7 +52,7 @@ def get_captcha():
 
 @app.route('/verify-subscription', methods=['POST'])
 def verify_subscription():
-    client_ip = request.remote_addr
+    client_ip = get_client_ip()
     show_captcha = len(page_loads[client_ip]) >= 3
     
     if show_captcha:
